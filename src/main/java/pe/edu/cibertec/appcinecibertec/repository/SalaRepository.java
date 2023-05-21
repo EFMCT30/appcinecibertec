@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import pe.edu.cibertec.appcinecibertec.model.bd.Sala;
 
 @Repository
-public interface SalaRepository extends JpaRepository<Sala, Integer> {
+public interface SalaRepository 
+	extends JpaRepository<Sala, Integer> {
 
 }

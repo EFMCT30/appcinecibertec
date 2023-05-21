@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class SalaRequest {
-
 	private Integer idsala;
 	private String descsala;
 	private Integer asientos;

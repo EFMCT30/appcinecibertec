@@ -1,8 +1,11 @@
 package pe.edu.cibertec.appcinecibertec.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,22 +21,26 @@ import pe.edu.cibertec.appcinecibertec.service.SalaService;
 @Controller
 @RequestMapping("/sala")
 public class SalaController {
-
+	
 	@Autowired
 	private SalaService salaService;
 	
 	@GetMapping("/frmsala")
 	public String frmMantSala(Model model) {
-		model.addAttribute("listasalas",salaService.listarSala());
+		model.addAttribute("listasalas", 
+				salaService.listarSala());
 		return "sala/frmsala";
 	}
 	
 	@PostMapping("/registrarSala")
 	@ResponseBody
-	public ResutadoResponse registrarSala(@RequestBody SalaRequest salaRequest) {
-		String mensaje="Sala Registrada Correctamente";
-		Boolean respuesta=true;
-		try {
+	public ResutadoResponse registrarSala(
+			@RequestBody SalaRequest salaRequest
+			) {
+		String mensaje ="Sala registrada correctamente";
+		Boolean respuesta = true;
+		try {			
+			//Se puede aplicar el patrón Builder en estos objetos
 			Sala objSala = new Sala();
 			if(salaRequest.getIdsala() > 0) {
 				objSala.setIdsala(salaRequest.getIdsala());
@@ -44,10 +51,41 @@ public class SalaController {
 			objEstado.setIdestado(salaRequest.getIdestado());
 			objSala.setEstado(objEstado);
 			salaService.registrarSala(objSala);
-		} catch (Exception ex) {
-			mensaje="sala no registrada";
-			respuesta=false;
+		}catch(Exception ex) {
+			mensaje = "Sala no registrada";
+			respuesta = false;
 		}
-		return ResutadoResponse.builder().mensaje(mensaje).respuesta(respuesta).build();
+		return ResutadoResponse.builder()
+				.mensaje(mensaje)
+				.respuesta(respuesta)
+				.build();
 	}
+	
+	@DeleteMapping("/eliminarSala")
+	@ResponseBody
+	public ResutadoResponse eliminarSala(@RequestBody
+			SalaRequest salaRequest) {
+		String mensaje = "Sala eliminada correctamente";
+		Boolean respuesta = true;
+		try {
+			salaService.eliminarSala(salaRequest.getIdsala());
+		}catch (Exception e) {
+			mensaje = "Sala no eliminada";
+			respuesta = false;
+		}
+		return ResutadoResponse.builder()
+				.mensaje(mensaje)
+				.respuesta(respuesta)
+				.build();
+	}
+	@GetMapping("/listarSalas")
+	@ResponseBody
+	public List<Sala> listarSalas(){
+		return salaService.listarSala();
+	}
+	
+	
+	
+	
+
 }
