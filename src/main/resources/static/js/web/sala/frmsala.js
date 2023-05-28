@@ -47,3 +47,76 @@ $(document).on("click", ".btnactualizar", function(){
 	})
 	$("#modalSala").modal("show");
 });
+
+$(document).on("click","#btnguardar",function(){
+	$.ajax({
+		type: "POST",
+		url: "/sala/registrarSala",
+		contentType: "application/json",
+		data: JSON.stringify({
+			idsala: $("#hddidregistrosala").val(),
+			descsala: $("#txtdescripcion").val(),
+			asientos: $("#txtnroasientos").val(),
+			idestado: $("#cboestado").val()
+		}),
+		success: function(resultado){
+			alert(resultado.mensaje);
+			ListarSala();
+		}
+	});
+	$("#modalSala").modal("hide");
+});
+
+$(document).on("click",".btneliminarsala",function(){
+	$("#hddideliminarsala").val("");
+	$("#hddideliminarsala").val($(this).attr("data-idsala"));
+	$("#mensajeeliminar").text("¿Está seguro de eliminar la "+$(this).attr("data-descsala")+"?");
+	$("#modalEliminarSala").modal("show");
+})
+
+$(document).on("click","#btneliminar",function(){
+	$.ajax({
+		type: "DELETE",
+		contentType: "application/json",
+		url: "/sala/eliminarSala",
+		data: JSON.stringify({
+			idsala: $("#hddideliminarsala").val(),
+		}),
+		success: function(resultado){
+			alert(resultado.mensaje);
+			ListarSala();
+		}
+	});
+	$("#modalEliminarSala").modal("hide");
+})
+
+function ListarSala(){
+	$.ajax({
+		type: "GET",
+		url: "/sala/listarSalas",
+		dataType: "json",
+	    success: function(resultado){
+	    	$("#tblsala > tbody").html("");
+	    	$.each(resultado, function(index,value){
+	    		$("#tblsala > tbody").append("<tr>"+ 
+	    		     "<td>"+value.idsala+"</td>"+	
+	    		     "<td>"+value.descsala+"</td>"+
+	    		     "<td>"+value.asientos+"</td>"+
+	    		     "<td>"+value.estado.descestado+"</td>"+
+	    		     "<td>"+
+	    		        "<button type='button' class='btn btn-success btnactualizar'"+
+	    		        "data-idsala='"+value.idsala+"'"+
+	    		        "data-descsala='"+value.descsala+"'"+
+	    		        "data-asientos='"+value.asientos+"'"+
+	    		        "data-idestado='"+value.estado.idestado+"'"+
+	    		        "><i class='fas fa-pen'></i></button></td>"+
+	    		        "<td>"+
+	    		        "<button type='button' class='btn btn-danger btneliminarsala'"+
+	    		        "data-idsala='"+value.idsala+"'"+
+	    		        "data-descsala='"+value.descsala+"'"+
+	    		        "><i class='fas fa-trash'></i></button></td>"+
+	    		     "</tr>")
+	    	})
+	    }
+	})
+}
